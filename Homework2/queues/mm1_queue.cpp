@@ -76,12 +76,15 @@ void MM1_Queue::initialize()
     {
 
       //TODO---------------------------------------------
-      expected_server_utilization_ ;
-      expected_idle_prob_ ;
-      expected_queue_length_ ;
-      expected_number_customers_ ;
-      expected_waiting_time_ ;
-      expected_response_time_ ;
+      expected_server_utilization_ = lambda_/mu_;
+
+	  //std::cout << "expected_server_utilization_" << expected_server_utilization_ << std::endl;
+
+      expected_idle_prob_ = 1-expected_server_utilization_;
+      expected_queue_length_ = lambda_ - mu_;
+      expected_number_customers_ = expected_server_utilization_/(1-expected_server_utilization_);
+      expected_waiting_time_ = expected_server_utilization_/(mu_ - lambda_);
+      expected_response_time_ = 1/(mu_ - lambda_);
       // ------------------------------------------------
 
       rnd_arrival.set_rate(lambda_);
@@ -231,7 +234,7 @@ Customer MM1_Queue::process_next_event()
 #endif
         mean_waiting_time_ += serving_.get_wait_time();
         if (serving_.get_wait_time() > max_waiting_time_) max_waiting_time_ = serving_.get_wait_time();
-     }
+	  }
     }
   return serving_;
 }

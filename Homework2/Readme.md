@@ -1,5 +1,5 @@
 
-#Homework #2: Discrete-Event Simulation Assignment
+# Homework #2: Discrete-Event Simulation Assignment
 
 Oddny H Brun
 deadline 28 Mar 12:00 am, additional days used 3
@@ -10,7 +10,7 @@ extra credit: a pseudo random generator added to part 1
 
 
 
-###(a) The Randomness of Five Random Number Generators
+### (a) The Randomness of Five Random Number Generators
 
 
 
@@ -70,7 +70,7 @@ As no absolute conclusion is possible based on the observations, any future sele
 
 
 
-###(b) Varying the Number of Observations
+### (b) Varying the Number of Observations
 
 
 
@@ -110,7 +110,7 @@ In general, N values of about 500 and 1000 should be expected to be too low for 
 
 
 
-###(c) Evaluation of Different Distributions 
+### (c) Evaluation of Different Distributions 
 
 
 

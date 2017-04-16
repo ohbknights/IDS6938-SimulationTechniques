@@ -282,7 +282,7 @@ void SIMAgent::FindDeriv()
 	//dv/dt = a = F/m = acceleration;
 				
 		deriv[0] = input[0] / Mass;			//force per mass = acceleration
-		deriv[1] = input[1]/Inertia;		//torque = angular force per mass = acceleration
+		deriv[1] = input[1] / Inertia;		//torque = angular force per mass = acceleration
 		deriv[2] = input[0] * deltaT / Mass;		//velocity of the agent in local body coordinates = 1/2at^2
 		deriv[3] = input[1] * deltaT / Inertia;		//angular velocity of the agent in world coordinates	
 }
@@ -298,8 +298,7 @@ void SIMAgent::UpdateState()
 	// TODO: Add code here
 	*********************************************/
 	
-
-
+	
 	for (int i = 0; i < dimState; i++) {
 		state[i] += deriv[i] * deltaT;
 	}
@@ -356,8 +355,14 @@ vec2 SIMAgent::Flee()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	vec2 tmp;
-	
+	//vec2 tmp;
+	vec2 tmp = goal - GPos;
+	tmp.Normalize();
+
+	thetad = atan2(tmp[1], tmp[0]);
+	thetad += M_PI;
+	float vd = SIMAgent::MaxVelocity;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	return tmp;
 }
 

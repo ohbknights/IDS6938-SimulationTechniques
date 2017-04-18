@@ -16,7 +16,7 @@ static char THIS_FILE[]=__FILE__;
 //Their real values are set in static function SIMAgent::InitValues()
 vector<SIMAgent*> SIMAgent::agents;
 bool SIMAgent::debug = false;
-float SIMAgent::radius = 5.0;
+float SIMAgent::radius = 20.0;
 float SIMAgent::Mass = 1.0;
 float SIMAgent::Inertia = 15.0;
 float SIMAgent::MaxVelocity = 6.0;
@@ -230,7 +230,7 @@ void SIMAgent::InitValues()
 	Kv0 = 1.20;
 	Kp1 = 10.;
 	Kv1 = 3.10;
-	KArrival = 1.0;
+	KArrival = .20;
 	KDeparture = 1.0;
 	KNoise = 1.0;
 	KWander = 1.0;
@@ -359,8 +359,7 @@ vec2 SIMAgent::Flee()
 	vec2 tmp = goal - GPos;
 	tmp.Normalize();
 
-	thetad = atan2(tmp[1], tmp[0]);
-	thetad += M_PI;
+	thetad = atan2(tmp[1], tmp[0]) + M_PI;
 	float vd = SIMAgent::MaxVelocity;
 	return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	return tmp;
@@ -380,17 +379,19 @@ vec2 SIMAgent::Arrival()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	//vec2 tmp;
+	
 	vec2 tmp = goal - GPos;
+	float dist = sqrt(pow(tmp[0], 2) +pow(tmp[1], 2));				//tmp.Length();
 	tmp.Normalize();
+	thetad = atan2(tmp[1], tmp[0]);
 	float vd = SIMAgent::MaxVelocity;
-	//double n = SIMAgent::MaxVelocity;
-	double vn = SIMAgent::MaxVelocity*(vd/radius);
-	
-	thetad = atan2(tmp[1], tmp[0]);	//*180.0/M_PI;
-	return vec2(cos(thetad)*vd, sin(thetad)*vd);
 
-	
+	if (dist < radius)
+	{
+		vd *= dist/radius;
+		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
+	}
+	return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	return tmp;
 }
 

@@ -5,6 +5,8 @@
 #include "stdafx.h"
 #include "Behavior.h"
 #include "Agent.h"
+#include "math.h"
+#include "random"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -16,10 +18,10 @@ static char THIS_FILE[]=__FILE__;
 //Their real values are set in static function SIMAgent::InitValues()
 vector<SIMAgent*> SIMAgent::agents;
 bool SIMAgent::debug = false;
-float SIMAgent::radius = 20.0;
-float SIMAgent::Mass = 1.0;
+float SIMAgent::radius = 1620.0;
+float SIMAgent::Mass = 3.0;
 float SIMAgent::Inertia = 15.0;
-float SIMAgent::MaxVelocity = 6.0;
+float SIMAgent::MaxVelocity = 12.0;
 float SIMAgent::MaxForce = 20.0;
 float SIMAgent::MaxTorque = 18.0;
 float SIMAgent::MaxAngVel = 15.0;
@@ -227,13 +229,13 @@ void SIMAgent::InitValues()
 	SIMAgent::KNoise, SIMAgent::KWander, SIMAgent::KAvoid, SIMAgent::TAvoid, SIMAgent::RNeighborhood,
 	SIMAgent::KSeparate, SIMAgent::KAlign, SIMAgent::KCohesion.
 	*********************************************/
-	Kv0 = 1.20;
+	Kv0 = 6.0;
 	Kp1 = 10.;
 	Kv1 = 3.10;
 	KArrival = .20;
-	KDeparture = 1.0;
-	KNoise = 1.0;
-	KWander = 1.0;
+	KDeparture = 10.0;
+	KNoise = .75;
+	KWander = 3.0;
 	KAvoid = 1.0;
 	TAvoid = 1.0;
 	RNeighborhood = 1.0;
@@ -283,8 +285,8 @@ void SIMAgent::FindDeriv()
 				
 		deriv[0] = input[0] / Mass;			//force per mass = acceleration
 		deriv[1] = input[1] / Inertia;		//torque = angular force per mass = acceleration
-		deriv[2] = input[0] * deltaT / Mass;		//velocity of the agent in local body coordinates = 1/2at^2
-		deriv[3] = input[1] * deltaT / Inertia;		//angular velocity of the agent in world coordinates	
+		deriv[2] = input[0] * 3.0*deltaT/ Mass;			//velocity of the agent in local body coordinates = 1/2at^2
+		deriv[3] = input[1] *3.0*deltaT / Inertia;	//angular velocity of the agent in world coordinates	
 }
 
 /*
@@ -336,7 +338,9 @@ vec2 SIMAgent::Seek()
 	tmp.Normalize();
 	
 	thetad = atan2(tmp[1], tmp[0]);	//*180.0/M_PI;
+	return vec2(cos(thetad), sin(thetad));
 	float vd= SIMAgent::MaxVelocity;
+	//float kv = SIMAgent::Kv0;
 	return vec2  (cos(thetad)*vd, sin(thetad)*vd);
 	
 }
@@ -350,6 +354,7 @@ vec2 SIMAgent::Seek()
 *  Store them into vd and thetad respectively
 *  return a vec2 that represents the goal velocity with its direction being thetad and its norm being vd
 */
+
 vec2 SIMAgent::Flee()
 {
 	/*********************************************
@@ -361,8 +366,7 @@ vec2 SIMAgent::Flee()
 
 	thetad = atan2(tmp[1], tmp[0]) + M_PI;
 	float vd = SIMAgent::MaxVelocity;
-	return vec2(cos(thetad)*vd, sin(thetad)*vd);
-	return tmp;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
 /*
@@ -381,18 +385,22 @@ vec2 SIMAgent::Arrival()
 	*********************************************/
 	
 	vec2 tmp = goal - GPos;
-	float dist = sqrt(pow(tmp[0], 2) +pow(tmp[1], 2));				//tmp.Length();
+	float dist = tmp.Length();				//tmp.Length();
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]);
 	float vd = SIMAgent::MaxVelocity;
-
+	float vn;
 	if (dist < radius)
 	{
-		vd *= dist/radius;
-		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
+		vn = vd*dist/radius;
+		/*vec2 vn;					//just verifying norm of the returning vec2
+		vn[0] = cos(thetad)*vd;
+		vn[1] = sin(thetad)*vd;
+		float vn_norm = sqrt(pow(vn[0], 2.0) + pow(vn[1], 2.0));*/
+		return vec2(cos(thetad)*vn, sin(thetad)*vn), tmp;
+		
 	}
-	return vec2(cos(thetad)*vd, sin(thetad)*vd);
-	return tmp;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
 /*
@@ -409,8 +417,19 @@ vec2 SIMAgent::Departure()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	vec2 tmp;
-
+	
+	vec2 tmp = goal - GPos;
+	float dist = tmp.Length();
+	float d_radius = 25.0;
+	tmp.Normalize();
+	
+	
+	if (dist < d_radius)
+	{
+		thetad = atan2(tmp[1], tmp[0]) + M_PI;
+		float vd = SIMAgent::MaxVelocity;
+		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+	}
 	return tmp;
 }
 
@@ -428,8 +447,16 @@ vec2 SIMAgent::Wander()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	vec2 tmp;
-
+	
+	vec2 tmp = goal - GPos;
+	tmp.Normalize();
+	//std::random_device rd;
+	//std::mt19937_64 engine(rd());
+	std::default_random_engine generator;
+	std::uniform_real_distribution<> distribution(0, 360);	
+	thetad = distribution(generator)*KNoise;				//atan2(tmp[1], tmp[0]) + M_PI;
+	float vd = SIMAgent::MaxVelocity*KWander;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 	return tmp;
 }
 

@@ -19,11 +19,11 @@ static char THIS_FILE[]=__FILE__;
 vector<SIMAgent*> SIMAgent::agents;
 bool SIMAgent::debug = false;
 float SIMAgent::radius = 1620.0;
-float SIMAgent::Mass = 3.0;
-float SIMAgent::Inertia = 15.0;
+float SIMAgent::Mass = 150.0;
+float SIMAgent::Inertia = 20.0;
 float SIMAgent::MaxVelocity = 12.0;
 float SIMAgent::MaxForce = 20.0;
-float SIMAgent::MaxTorque = 18.0;
+float SIMAgent::MaxTorque = 30.0;
 float SIMAgent::MaxAngVel = 15.0;
 float SIMAgent::Kv0 = 1.0;
 float SIMAgent::Kp1 = 1.0;
@@ -285,8 +285,8 @@ void SIMAgent::FindDeriv()
 				
 		deriv[0] = input[0] / Mass;			//force per mass = acceleration
 		deriv[1] = input[1] / Inertia;		//torque = angular force per mass = acceleration
-		deriv[2] = input[0] * 3.0*deltaT/ Mass;			//velocity of the agent in local body coordinates = 1/2at^2
-		deriv[3] = input[1] *3.0*deltaT / Inertia;	//angular velocity of the agent in world coordinates	
+		deriv[2] = state[2] - vd;						//	input[0] * 3.0*deltaT / Mass	;			//velocity of the agent in local body coordinates = 1/2at^2
+		deriv[3] = input[1] *deltaT / Inertia;	//angular velocity of the agent in world coordinates	
 }
 
 /*
@@ -337,7 +337,7 @@ vec2 SIMAgent::Seek()
 	vec2 tmp = goal - GPos;
 	tmp.Normalize();
 	
-	thetad = atan2(tmp[1], tmp[0]);	//*180.0/M_PI;
+	thetad = atan2(tmp[1], tmp[0]) + M_PI;	//*180.0/M_PI;
 	return vec2(cos(thetad), sin(thetad));
 	float vd= SIMAgent::MaxVelocity;
 	//float kv = SIMAgent::Kv0;
@@ -364,7 +364,7 @@ vec2 SIMAgent::Flee()
 	vec2 tmp = goal - GPos;
 	tmp.Normalize();
 
-	thetad = atan2(tmp[1], tmp[0]) + M_PI;
+	thetad = atan2(tmp[1], tmp[0]);
 	float vd = SIMAgent::MaxVelocity;
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
@@ -387,7 +387,7 @@ vec2 SIMAgent::Arrival()
 	vec2 tmp = goal - GPos;
 	float dist = tmp.Length();				//tmp.Length();
 	tmp.Normalize();
-	thetad = atan2(tmp[1], tmp[0]);
+	thetad = atan2(tmp[1], tmp[0]) + M_PI;
 	float vd = SIMAgent::MaxVelocity;
 	float vn;
 	if (dist < radius)
@@ -422,15 +422,17 @@ vec2 SIMAgent::Departure()
 	float dist = tmp.Length();
 	float d_radius = 25.0;
 	tmp.Normalize();
+	thetad = atan2(tmp[1], tmp[0]);
+	float vd = SIMAgent::MaxVelocity;
+	float vn;
 	
-	
-	if (dist < d_radius)
+	if (dist > d_radius)
 	{
-		thetad = atan2(tmp[1], tmp[0]) + M_PI;
-		float vd = SIMAgent::MaxVelocity;
-		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+		
+		vn = vd/KWander;
+		return vec2(cos(thetad)*vn, sin(thetad)*vn), tmp;
 	}
-	return tmp;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
 /*

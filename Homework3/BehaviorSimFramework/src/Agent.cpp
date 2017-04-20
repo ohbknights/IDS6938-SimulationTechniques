@@ -18,15 +18,15 @@ static char THIS_FILE[]=__FILE__;
 //Their real values are set in static function SIMAgent::InitValues()
 vector<SIMAgent*> SIMAgent::agents;
 bool SIMAgent::debug = false;
-float SIMAgent::radius = 1620.0;
-float SIMAgent::Mass = 150.0;
-float SIMAgent::Inertia = 20.0;
-float SIMAgent::MaxVelocity = 12.0;
-float SIMAgent::MaxForce = 20.0;
-float SIMAgent::MaxTorque = 30.0;
-float SIMAgent::MaxAngVel = 15.0;
+float SIMAgent::radius = 1.50;
+float SIMAgent::Mass = 100.0;
+float SIMAgent::Inertia = 30.0;
+float SIMAgent::MaxVelocity = 5.0;
+float SIMAgent::MaxForce = 1.5;
+float SIMAgent::MaxTorque = 40.0;
+float SIMAgent::MaxAngVel = 1.0;
 float SIMAgent::Kv0 = 1.0;
-float SIMAgent::Kp1 = 1.0;
+float SIMAgent::Kp1 = 8.0;
 float SIMAgent::Kv1 = 1.0;
 float SIMAgent::KArrival = 1.0;
 float SIMAgent::KDeparture = 1.0;
@@ -229,9 +229,9 @@ void SIMAgent::InitValues()
 	SIMAgent::KNoise, SIMAgent::KWander, SIMAgent::KAvoid, SIMAgent::TAvoid, SIMAgent::RNeighborhood,
 	SIMAgent::KSeparate, SIMAgent::KAlign, SIMAgent::KCohesion.
 	*********************************************/
-	Kv0 = 6.0;
-	Kp1 = 10.;
-	Kv1 = 3.10;
+	Kv0 = 1.5;
+	Kp1 = 8.;
+	Kv1 = 1.50;
 	KArrival = .20;
 	KDeparture = 10.0;
 	KNoise = .75;
@@ -388,16 +388,13 @@ vec2 SIMAgent::Arrival()
 	float dist = tmp.Length();				//tmp.Length();
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]) + M_PI;
+	
 	float vd = SIMAgent::MaxVelocity;
-	float vn;
+	//float vn;
 	if (dist < radius)
 	{
-		vn = vd*dist/radius;
-		/*vec2 vn;					//just verifying norm of the returning vec2
-		vn[0] = cos(thetad)*vd;
-		vn[1] = sin(thetad)*vd;
-		float vn_norm = sqrt(pow(vn[0], 2.0) + pow(vn[1], 2.0));*/
-		return vec2(cos(thetad)*vn, sin(thetad)*vn), tmp;
+		vd *= dist/radius;
+		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 		
 	}
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
@@ -479,9 +476,32 @@ vec2 SIMAgent::Avoid()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	vec2 tmp;
+	vec2 tmp = goal - GPos;
 	
-	return tmp;
+	tmp.Normalize();
+	thetad = atan2(tmp[1], tmp[0]);
+	float vd = SIMAgent::MaxVelocity;
+	//equation for line between GPos and goal to check if obstacle is on path +/- radius
+	//just for first obstacle now
+	float m_coef;
+	float con;
+	float y_a;
+	float x_a;
+	m_coef = (goal[1] - GPos[1]) / (goal[0] - GPos[0]);
+	con = (goal[1] - GPos[1]) - m_coef*(goal[0] - GPos[0]);
+	x_a = (env->obstacles[0][1] - con) / m_coef;
+	y_a = m_coef*env->obstacles[0][0] + con;
+	int nObs = env->obstaclesNum;
+
+	if (pow((x_a + radius - env->obstacles[0][0]), 2.0) < pow(env->obstacles[0][3], 2.0))
+	{
+		thetad -= 1.5f;
+	}
+	if (pow((y_a + radius - env->obstacles[0][1]), 2.0) < pow(env->obstacles[0][3], 2.0))
+	{
+		thetad += 1.5f;
+	}
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
 /*

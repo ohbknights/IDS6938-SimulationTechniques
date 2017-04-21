@@ -34,7 +34,7 @@ float SIMAgent::KNoise = 1.0;
 float SIMAgent::KWander = 1.0;
 float SIMAgent::KAvoid = 1.0;
 float SIMAgent::TAvoid = 1.0;
-float SIMAgent::RNeighborhood = 1.0;
+float SIMAgent::RNeighborhood = 3.0;
 float SIMAgent::KSeparate = 1.0;
 float SIMAgent::KAlign = 1.0;
 float SIMAgent::KCohesion = 1.0;
@@ -476,11 +476,7 @@ vec2 SIMAgent::Avoid()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	vec2 tmp = goal - GPos;
 	
-	tmp.Normalize();
-	thetad = atan2(tmp[1], tmp[0]);
-	float vd = SIMAgent::MaxVelocity;
 	//equation for line between GPos and goal to check if obstacle is on path +/- radius
 	//just for first obstacle now
 	float m_coef;
@@ -491,17 +487,32 @@ vec2 SIMAgent::Avoid()
 	con = (goal[1] - GPos[1]) - m_coef*(goal[0] - GPos[0]);
 	x_a = (env->obstacles[0][1] - con) / m_coef;
 	y_a = m_coef*env->obstacles[0][0] + con;
-	int nObs = env->obstaclesNum;
 
-	if (pow((x_a + radius - env->obstacles[0][0]), 2.0) < pow(env->obstacles[0][3], 2.0))
-	{
-		thetad -= 1.5f;
+	//int nObs = env->obstaclesNum;
+
+	vec2 tmp = goal - GPos;
+
+	tmp.Normalize();
+	thetad = atan2(tmp[1], tmp[0]) +M_PI;
+	float vd = SIMAgent::MaxVelocity;
+	float x_col = sqrt((pow((x_a + radius - env->obstacles[0][0]), 2.0)));
+	float y_col = sqrt((pow((y_a + radius - env->obstacles[0][1]), 2.0)));
+	float r_obs = env->obstacles[0][3];
+	if (x_col < r_obs) {
+		thetad += .5;
+		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	}
-	if (pow((y_a + radius - env->obstacles[0][1]), 2.0) < pow(env->obstacles[0][3], 2.0))
-	{
-		thetad += 1.5f;
+
+	else if (y_col < r_obs) {
+		thetad -= .5;
+		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	}
-	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+
+	else {
+		thetad = thetad;
+		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
+	}
+	return vec2(cos(thetad)*vd, sin(thetad)*vd);
 }
 
 /*
@@ -517,9 +528,17 @@ vec2 SIMAgent::Separation()
 	/*********************************************
 	// TODO: Add code here
 	*********************************************/
-	vec2 tmp;
+	//vec2 tmp;
+	//SIMAgent::agents[i];
 
-	return tmp;
+	vec2 tmp = goal - GPos;
+	tmp.Normalize();
+
+	thetad = atan2(tmp[1], tmp[0]);
+
+	float vd = SIMAgent::MaxVelocity*KSeparate;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+	//return tmp;
 }
 
 /*

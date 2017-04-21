@@ -22,7 +22,7 @@ Step one: Identify other agents within radius of "RNeighborhood" of our agent
 
 In order to understand where to find info about other agents location an how to refer to it, I created 2 agents and find their info in "SIMAgent::agents", ref. screenshot below, where the frame nr, color, etc. are given.  
 
-![Agents' Information'](agents_2.png)
+![Agents' Information'](images/agents_2.png)
 
 ### Part 2 - Simulating a simple pedestrian flow
 
@@ -30,7 +30,7 @@ In order to understand where to find info about other agents location an how to 
 
 The subway enterance example was created with boundaries, walls, entrance and exit, including faregates before exit to train as shown in the figures below for entrance rate of 1000 per min.
 
-![Subway Hall](part2_a_1.png)
+![Subway Hall](images/part2_a_1.png)
 
 Adding 3d,
 

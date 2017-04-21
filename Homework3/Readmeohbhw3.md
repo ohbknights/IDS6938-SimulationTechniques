@@ -3,7 +3,28 @@
 ## IDS6938-Simulation Techniques - [University of Central Florida](http://www.ist.ucf.edu/grad/)
 by Oddny H Brun
 
-### Part2 - Simulating a simple pedestrian flow
+### Part 1 Behaviors
+
+#### (a) Derivative
+
+#### (b) Individual behaviors
+
+Obstacles
+
+Approach:
+- find number of obstales (obstacleNum)
+- find obstacle location and diameter () and () and check if "cylinder corridor" along the direction of movement is clear
+- take corrective action when "cylinder corridor" is not clear.
+
+#### (c) Agent Group Behavior
+
+Step one: Identify other agents within radius of "RNeighborhood" of our agent
+
+In order to understand where to find info about other agents location an how to refer to it, I created 2 agents and find their info in "SIMAgent::agents", ref. screenshot below, where the frame nr, color, etc. are given.  
+
+![Agents' Information'](agents_2.png)
+
+### Part 2 - Simulating a simple pedestrian flow
 
 #### (a) Subway Enterance
 
@@ -36,7 +57,7 @@ When increasing the entrance rate to 5,000 per minute, the density plot indicate
 
 So far, all pedestrians are choosing the same route, the one that leads to the exit as they pass through the maze.
 
-### (c) Modeling and analysis of the PIII building
+#### (c) Modeling and analysis of the PIII building
 
 One floor of the IST PIII building is modelled using the first floor floor plan. (Dr Wiegand and several of the labs are according to my model on forst floor for the time being.)
 
@@ -44,7 +65,7 @@ One floor of the IST PIII building is modelled using the first floor floor plan.
 
 And Dr. Wegand is, according to the density map, close to teh hottest spot (printer or coffe machine?).
 
-![Entrance to PIII of 100 people per min, density map ](part2_c_1.png)
+![Entrance to PIII of 100 people per min, density map ](part2_c_3.png)
 
 
 

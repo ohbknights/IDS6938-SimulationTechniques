@@ -1,4 +1,4 @@
-# Homework 3 : Agent based Simulation Assignment 
+# Homework 3 : Agent based Simulation Assignment
 
 ## IDS6938-Simulation Techniques - [University of Central Florida](http://www.ist.ucf.edu/grad/)
 by Oddny H Brun
@@ -7,22 +7,48 @@ by Oddny H Brun
 
 #### (a) Derivative
 
+The derivatives are implemented using Eulers method. The first two, deriv[0] and deriv[1] represent the change in velocity per time step dv/dt = force/mass = acceleration for linear and angular movement of the agent, respecitvely. The other two, deriv[1] and deriv[2] are the change in length traveled by the agent per time step, dx/dt = v. The Euler method seems to give reasonable results in terms of linear movement. I suspect thet a higher order method like the midpoint method or the Runge-Kutta 4 method might have given more narrow turns whenever an agent changes direction. This has not been checked or attmpted quantified in this work.
+
+The derivative were defined as:
+
+		deriv[0] = input[0] / Mass;
+		deriv[1] = input[1] / Inertia;
+		deriv[2] = state[2] - vd;
+		deriv[3] = input[1] / Inertia; //Assuming time is one as velocity*time equals distance.
+
+In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axix as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 40/30, and a force per mass of 8/100.
+
 #### (b) Individual behaviors
+
+Seek
+
+Seek was implemented
 
 Obstacles
 
 Approach:
 - find number of obstales (obstacleNum)
-- find obstacle location and diameter () and () and check if "cylinder corridor" along the direction of movement is clear
+- find obstacle location and diameter (env->obstacles[0][0], env->obstacles[0][1]) and (env->obstacles[0][2]) and check if "cylinder corridor" along the direction of movement is clear
 - take corrective action when "cylinder corridor" is not clear.
+
+Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the straight line between agent's location, GPos, and its goal, goal. A raduis of length "radius" is added to both sides of the straight line to define the corridor. The for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. We check in both x and y direction and decrease or increase the angel thetad, respectively.
+
+Status: Used obstacle no 0 and found it to be within the agent's corridor, but have issues with my "if statement" and get aborted during execution. Also, the thetad angle adjustment is currently set to +/_ .5 just to test the effect (as oppostite to a proper calculation based on degree of obstacle blockage.
+
+
 
 #### (c) Agent Group Behavior
 
+Avoid.
+
 Step one: Identify other agents within radius of "RNeighborhood" of our agent
 
-In order to understand where to find info about other agents location an how to refer to it, I created 2 agents and find their info in "SIMAgent::agents", ref. screenshot below, where the frame nr, color, etc. are given.  
+In order to understand where to find info about other agents' location an how to refer to it, I created 2 agents and find their info in "SIMAgent::agents", ref. screenshot below, where the frame nr, color, etc. are given. Need to find their locations, GPos.
 
-![Agents' Information'](images/agents_2.png)
+I pick agents[0] to be my agent and usees its location to check for others within a radius of RNeighborhood. 
+
+![Agents Information](agents_2.png)
+
 
 ### Part 2 - Simulating a simple pedestrian flow
 
@@ -30,7 +56,7 @@ In order to understand where to find info about other agents location an how to 
 
 The subway enterance example was created with boundaries, walls, entrance and exit, including faregates before exit to train as shown in the figures below for entrance rate of 1000 per min.
 
-![Subway Hall](images/part2_a_1.png)
+![Subway Hall](part2_a_1.png)
 
 Adding 3d,
 

@@ -238,7 +238,7 @@ void SIMAgent::InitValues()
 	KWander = 3.0;
 	KAvoid = 1.0;
 	TAvoid = 1.0;
-	RNeighborhood = 1.0;
+	RNeighborhood = 2.0;
 	KSeparate = .10;
 	KAlign = 1.0;
 	KCohesion = .010;
@@ -286,7 +286,7 @@ void SIMAgent::FindDeriv()
 		deriv[0] = input[0] / Mass;			//force per mass = acceleration
 		deriv[1] = input[1] / Inertia;		//torque = angular force per mass = acceleration
 		deriv[2] = state[2] - vd;						//	input[0] * 3.0*deltaT / Mass	;			//velocity of the agent in local body coordinates = 1/2at^2
-		deriv[3] = input[1] *deltaT / Inertia;	//angular velocity of the agent in world coordinates	
+		deriv[3] = input[1] / Inertia;	//t=1, angular velocity of the agent in world coordinates	
 }
 
 /*
@@ -385,19 +385,17 @@ vec2 SIMAgent::Arrival()
 	*********************************************/
 	
 	vec2 tmp = goal - GPos;
-	float dist = tmp.Length();				//tmp.Length();
+	float ADist = tmp.Length();
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]) + M_PI;
-	
+	float ARadius = 100.0;
 	float vd = SIMAgent::MaxVelocity;
 	//float vn;
-	if (dist < radius)
-	{
-		vd *= dist/radius;
+	if (ADist < ARadius)
+		vd = vd*ADist/ARadius;
 		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
-		
-	}
-	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+	
+	return vec2(cos(thetad)*vd*0.0, sin(thetad)*vd*0.0), tmp;
 }
 
 /*
@@ -479,31 +477,37 @@ vec2 SIMAgent::Avoid()
 	
 	//equation for line between GPos and goal to check if obstacle is on path +/- radius
 	//just for first obstacle now
+	
+	vec2 tmp = goal - GPos;
+
+	tmp.Normalize();
+	thetad = atan2(tmp[1], tmp[0]) + M_PI;
+	float vd = SIMAgent::MaxVelocity;
+
 	float m_coef;
 	float con;
 	float y_a;
 	float x_a;
 	m_coef = (goal[1] - GPos[1]) / (goal[0] - GPos[0]);
 	con = (goal[1] - GPos[1]) - m_coef*(goal[0] - GPos[0]);
+
+	//for(unsigned k=0; k< env->obstaclesNum; k++) {;
+
 	x_a = (env->obstacles[0][1] - con) / m_coef;
 	y_a = m_coef*env->obstacles[0][0] + con;
 
-	//int nObs = env->obstaclesNum;
+	
+	//float x_col = sqrt((pow((x_a + radius - env->obstacles[0][0]), 2.0)));
+	//float y_col = sqrt((pow((y_a + radius - env->obstacles[0][1]), 2.0)));
+	//float r_obs = env->obstacles[0][3];
 
-	vec2 tmp = goal - GPos;
-
-	tmp.Normalize();
-	thetad = atan2(tmp[1], tmp[0]) +M_PI;
-	float vd = SIMAgent::MaxVelocity;
-	float x_col = sqrt((pow((x_a + radius - env->obstacles[0][0]), 2.0)));
-	float y_col = sqrt((pow((y_a + radius - env->obstacles[0][1]), 2.0)));
-	float r_obs = env->obstacles[0][3];
-	if (x_col < r_obs) {
+	
+	if (sqrt((pow((x_a + radius - env->obstacles[0][0]), 2.0))) < env->obstacles[0][3]) {
 		thetad += .5;
 		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	}
 
-	else if (y_col < r_obs) {
+	else if (sqrt((pow((y_a + radius - env->obstacles[0][1]), 2.0))) < env->obstacles[0][3]) {
 		thetad -= .5;
 		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	}
@@ -512,6 +516,7 @@ vec2 SIMAgent::Avoid()
 		thetad = thetad;
 		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
 	}
+	//}
 	return vec2(cos(thetad)*vd, sin(thetad)*vd);
 }
 
@@ -529,16 +534,42 @@ vec2 SIMAgent::Separation()
 	// TODO: Add code here
 	*********************************************/
 	//vec2 tmp;
-	//SIMAgent::agents[i];
-
+	SIMAgent::agents[0];
+	SIMAgent::agents[1];
+	SIMAgent::agents[0][0];
+	SIMAgent::agents[1][0];
+	SIMAgent::agents[2][0];
 	vec2 tmp = goal - GPos;
-	tmp.Normalize();
+	vec2 a_dist;
+	vec2 norm_tmp;
+	
+	float RNlength;
+	//for (unsigned j = 0; j < SIMAgent::agents.size(); j++)
+	//{
+		a_dist[1] = (0.0, 0.0);						//(SIMAgent::agents[0][0] - SIMAgent::agents[j][0], SIMAgent::agents[0][1] - SIMAgent::agents[j][1]);
+		RNlength = a_dist.Length();
+		if (RNlength < SIMAgent::RNeighborhood)				//the a_dist[] values are read from SIMAgent::agents and added in mannually
+			norm_tmp += tmp.Normalize();
+		return norm_tmp.Normalize();
 
-	thetad = atan2(tmp[1], tmp[0]);
+		a_dist[1] = (0.839-.302, .804-.729);
+		RNlength = a_dist.Length();		//(SIMAgent::agents[0][0] - SIMAgent::agents[j][0], SIMAgent::agents[0][1] - SIMAgent::agents[j][1]);
+		if (RNlength < SIMAgent::RNeighborhood)				//the a_dist[] values are read from SIMAgent::agents and added in mannually
+			norm_tmp += tmp.Normalize();
+		return norm_tmp.Normalize();
 
+		a_dist[1] = (0.839 - .847, .804 - .855);	//(SIMAgent::agents[0][0] - SIMAgent::agents[j][0], SIMAgent::agents[0][1] - SIMAgent::agents[j][1]);
+		RNlength = a_dist.Length();
+		if (RNlength < SIMAgent::RNeighborhood)
+			norm_tmp += tmp.Normalize();
+		return norm_tmp.Normalize();
+	//}
+	norm_tmp = norm_tmp.Normalize();
+	thetad = atan2(norm_tmp[1], norm_tmp[0]);
+		
 	float vd = SIMAgent::MaxVelocity*KSeparate;
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
-	//return tmp;
+	
 }
 
 /*

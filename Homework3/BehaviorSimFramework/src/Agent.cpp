@@ -285,7 +285,7 @@ void SIMAgent::FindDeriv()
 				
 		deriv[0] = input[0] / Mass;			//force per mass = acceleration
 		deriv[1] = input[1] / Inertia;		//torque = angular force per mass = acceleration
-		deriv[2] = state[2] - vd;						//	input[0] * 3.0*deltaT / Mass	;			//velocity of the agent in local body coordinates = 1/2at^2
+		deriv[2] = -(vd);						//	input[0] * 3.0*deltaT / Mass	;			//velocity of the agent in local body coordinates = 1/2at^2
 		deriv[3] = input[1] / Inertia;	//t=1, angular velocity of the agent in world coordinates	
 }
 
@@ -341,7 +341,7 @@ vec2 SIMAgent::Seek()
 	return vec2(cos(thetad), sin(thetad));
 	float vd= SIMAgent::MaxVelocity;
 	//float kv = SIMAgent::Kv0;
-	return vec2  (cos(thetad)*vd, sin(thetad)*vd);
+	return vec2  (cos(thetad)*vd, sin(thetad)*vd), tmp;
 	
 }
 
@@ -388,14 +388,17 @@ vec2 SIMAgent::Arrival()
 	float ADist = tmp.Length();
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]) + M_PI;
-	float ARadius = 100.0;
-	float vd = SIMAgent::MaxVelocity;
+	float ARadius = 300.0;
+	//float vd = SIMAgent::MaxVelocity;
+	float vd = SIMAgent::Kv0;
 	//float vn;
 	if (ADist < ARadius)
-		vd = vd*ADist/ARadius;
+
+		vd = state[2]*.25;
 		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+		
 	
-	return vec2(cos(thetad)*vd*0.0, sin(thetad)*vd*0.0), tmp;
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
 /*
@@ -414,14 +417,14 @@ vec2 SIMAgent::Departure()
 	*********************************************/
 	
 	vec2 tmp = goal - GPos;
-	float dist = tmp.Length();
-	float d_radius = 25.0;
+	float DDist = tmp.Length();
+	float DRadius = 750.0;
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]);
 	float vd = SIMAgent::MaxVelocity;
 	float vn;
 	
-	if (dist > d_radius)
+	if (DDist > DRadius)
 	{
 		
 		vn = vd/KWander;
@@ -454,7 +457,7 @@ vec2 SIMAgent::Wander()
 	thetad = distribution(generator)*KNoise;				//atan2(tmp[1], tmp[0]) + M_PI;
 	float vd = SIMAgent::MaxVelocity*KWander;
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
-	return tmp;
+	//return tmp;
 }
 
 /*
@@ -514,10 +517,10 @@ vec2 SIMAgent::Avoid()
 
 	else {
 		thetad = thetad;
-		//return vec2(cos(thetad)*vd, sin(thetad)*vd);
+		//return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 	}
 	//}
-	return vec2(cos(thetad)*vd, sin(thetad)*vd);
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
 /*

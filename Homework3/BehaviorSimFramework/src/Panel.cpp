@@ -128,7 +128,7 @@ void CPanel::OnInitialUpdate()
 		m_Number = 1;
 		sim->CreateAgents(m_Number);
 		CheckRadioButton(IDC_RADIO_SEEK, IDC_RADIO_OAVOID, IDC_RADIO_ARRIVAL);
-		sim->type = ARRIVAL;
+		sim->type = SEEK;
 		m_Mass = SIMAgent::Mass;
 		m_Inertia = SIMAgent::Inertia;
 		m_MaxForce = SIMAgent::MaxForce;

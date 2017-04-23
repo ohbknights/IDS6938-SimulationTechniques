@@ -31,9 +31,9 @@ Approach:
 - find obstacle location and diameter (env->obstacles[0][0], env->obstacles[0][1]) and (env->obstacles[0][2]) and check if "cylinder corridor" along the direction of movement is clear
 - take corrective action when "cylinder corridor" is not clear.
 
-Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the straight line between agent's location, GPos, and its goal, goal. A raduis of length "radius" is added to both sides of the straight line to define the corridor. The for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. We check in both x and y direction and decrease or increase the angel thetad, respectively.
+Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the straight line between agent's location, GPos, and its goal, goal. A radius of length "radius" is added to both sides in x and y direction (that is the actual radius, the hypotenus, is a liitle bigger than the radius) of the straight line to define the corridor. The for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. I check in both x and y direction along the direction of travel, and if obstacle is within corridor, I decrease or increase the angel thetad, respectively.
 
-Status: Used obstacle no 0 and found it to be within the agent's corridor, but have issues with my "if statement" and get aborted during execution. Also, the thetad angle adjustment is currently set to +/_ .5 just to test the effect (as oppostite to a proper calculation based on degree of obstacle blockage.
+Status: Used obstacle no 1 and found it to be within the agent's corridor, but have issues with my "if statement" and get aborted during execution. Also, the thetad angle adjustment is currently set to +/_ .5 just to test the effect (as oppostite to a proper calculation based on degree of obstacle blockage.
 
 
 
@@ -45,7 +45,7 @@ Step one: Identify other agents within radius of "RNeighborhood" of our agent
 
 In order to understand where to find info about other agents' location an how to refer to it, I created 2 agents and find their info in "SIMAgent::agents", ref. screenshot below, where the frame nr, color, etc. are given. Need to find their locations, GPos.
 
-I pick agents[0] to be my agent and usees its location to check for others within a radius of RNeighborhood. 
+I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. 
 
 ![Agents Information](agents_2.png)
 

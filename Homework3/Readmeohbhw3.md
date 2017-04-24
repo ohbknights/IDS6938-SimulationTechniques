@@ -47,7 +47,7 @@ In order to understand where to find info about other agents' location an how to
 
 I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. 
 
-![Agents Information](agents_2.png)
+![Agents Information](agents_2.PNG)
 
 
 ### Part 2 - Simulating a simple pedestrian flow
@@ -56,21 +56,21 @@ I pick agents[0] to be my agent and usees its location to check for the other wi
 
 The subway enterance example was created with boundaries, walls, entrance and exit, including faregates before exit to train as shown in the figures below for entrance rate of 1000 per min.
 
-![Subway Hall](part2_a_1.png)
+![Subway Hall](part2_a_1.PNG)
 
 Adding 3d,
 
-![Subway Hall 3d](part2_a_2.png)
+![Subway Hall 3d](part2_a_2.PNG)
 
 And adding faregates, displayed with density map,
 
-![Faregates, density map](part2_a_3.png)
+![Faregates, density map](part2_a_3.PNG)
 
 The entrance frequency was increased to 14,000 per minute and the back up and lines were visible as demonstrated in the below two figures:
 
-![Density for 14,000](part2_a_4.png)
+![Density for 14,000](part2_a_4.PNG)
 
-![3d of 14,000 entrances per minute](part2_a_5.png)
+![3d of 14,000 entrances per minute](part2_a_5.PNG)
 
 #### (b) Maze
 
@@ -79,35 +79,35 @@ I coipied a maze from www.mazegenerator.net and traced it. The pedestrians are e
 
 When increasing the entrance rate to 5,000 per minute, the density plot indicates queues start to build up in areas with narrow passages, ref map fig with density below. The most congested area, not taking the entrance area into consideration is in the 3rd quadrant where the passage is rather narrow due to poor tracing of the maze. Similar effect was observed with lower entrance rate and larger size people so the hall ways became relatively more narrow. 
 
-![Maze, density 5,000 arrivals per hour](part2_b_2.png)
+![Maze, density 5,000 arrivals per hour](part2_b_2.PNG)
 
 So far, all pedestrians are choosing the same route, the one that leads to the exit as they pass through the maze. In order to diverge pedestrians to some of the dead ends, three pedestrian service areas were placed at three different locations. Pedestrians were directed uniformly distributed to these areas at a rate of .2 each, while the reminding 40% of the pedestrians were routed straight to the exit. This created little changes to the density map except for the expected population of these service areas, ref fig below. The service areas provided service at a uniformly distributed rare.
 
-![Maze density, 8,000 arrivals per hour, three service areas](part2_b_5.png). The locations of the service areas are easier recognized in the following figure:
+![Maze density, 8,000 arrivals per hour, three service areas](part2_b_5.PNG). The locations of the service areas are easier recognized in the following figure:
 
-![Maze service areas locations](part2_b_6.png)
+![Maze service areas locations](part2_b_6.PNG)
 
 The three service areas were changed to provide service at a Poisson distribution, still receiving the same amount of pedestrians. This resulted in the service areas to start accumulating queues as seen in the density map below:
 
-![Poisson distributed service times](part2_b_7.png)
+![Poisson distributed service times](part2_b_7.PNG)
 
 
 #### (c) Modeling and analysis of the PIII building
 
 One floor of the IST PIII building is modelled using the first floor floor plan. (Dr Wiegand and several of the labs are according to my model on forst floor for the time being.)
 
-![IST PIII Floor plan](part2_c_2.png)
+![IST PIII Floor plan](part2_c_2.PNG)
 
 And Dr. Wegand is, according to the density map, close to the hottest spot (printer or coffe machine?). The floor plan is further detailed with six labs located on my version of this floor, L1 - L5 and the 3d Print lab. Lab 1 leas to lab 2 and lab 2 leads to lab 3. Lab 4 and 5 are only accessible through lab 5. The 3D lab is acceccible from the corridor. With 100 people entering the floor per hour uniformly distributed, there are two hot spots identified, one in the narrower part of the hallway outside lab1 enterance, not too far from Dr. Wiegand's office, and the other is closer to the exit, ref. figure below. Looking closer at the floor plan, the hallway is ratehr narrow in that first hot spot area and pedestrians get "tricked into the small office next to the hallway.
 
-![Entrance to PIII of 100 people per min, density map ](part2_c_4.png)
+![Entrance to PIII of 100 people per min, density map ](part2_c_4.PNG)
 
 After improving the wall recreatin which expanded the hallway, the first hotspot was resolved, ref the 3D image below.
 
-![Pedestrian flow, 100 pedestriands per hour](part2_c_5.png)
+![Pedestrian flow, 100 pedestriands per hour](part2_c_5.PNG)
 
 Statistic
 
 The 3D Lab utilization was added, represented by a bar chart, showing a utilization of about 80% on average. This is aout what should be expected as 50% of the pedestrians entering the building was set to visit this lab.
 
-![3D lab utilization](part2_c_6.png)
+![3D lab utilization](part2_c_6.PNG)

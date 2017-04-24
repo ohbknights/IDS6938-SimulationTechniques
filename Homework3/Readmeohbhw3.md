@@ -75,19 +75,19 @@ The entrance frequency was increased to 14,000 per minute and the back up and li
 #### (b) Maze
 
 I coipied a maze from www.mazegenerator.net and traced it. The pedestrians are entering at a rate of 1,000 per minute and exiting without showing any area of congestion (queue). The belonging density map is shown in the below figure,
-![Maze, density, 1,000 arrivals per minute](part2_b_1.PNG)
+![Maze, density, 1,000 arrivals per hour](part2_b_1.PNG)
 
 When increasing the entrance rate to 5,000 per minute, the density plot indicates queues start to build up in areas with narrow passages, ref map fig with density below. The most congested area, not taking the entrance area into consideration is in the 3rd quadrant where the passage is rather narrow due to poor tracing of the maze. Similar effect was observed with lower entrance rate and larger size people so the hall ways became relatively more narrow. 
 
-![Maze, density 5,000 arrivals per minute](part2_b_2.png)
+![Maze, density 5,000 arrivals per hour](part2_b_2.png)
 
 So far, all pedestrians are choosing the same route, the one that leads to the exit as they pass through the maze. In order to diverge pedestrians to some of the dead ends, three pedestrian service areas were placed at three different locations. Pedestrians were directed uniformly distributed to these areas at a rate of .2 each, while the reminding 40% of the pedestrians were routed straight to the exit. This created little changes to the density map except for the expected population of these service areas, ref fig below. The service areas provided service at a uniformly distributed rare.
 
-![Maze density, 5,000 arrivals per minute, three service areas](part2_b_5.png). The locations of the service areas are easier recognized in the following figure:
+![Maze density, 8,000 arrivals per hour, three service areas](part2_b_5.png). The locations of the service areas are easier recognized in the following figure:
 
 ![Maze service areas locations](part2_b_6.png)
 
-The three service areas were changed to provide service at a Poisson distribution, still receiving the same amount of pedestrians. This resulted in the service areas to accumulating queues as seen in the density map below:
+The three service areas were changed to provide service at a Poisson distribution, still receiving the same amount of pedestrians. This resulted in the service areas to start accumulating queues as seen in the density map below:
 
 ![Poisson distributed service times](part2_b_7.png)
 
@@ -98,9 +98,13 @@ One floor of the IST PIII building is modelled using the first floor floor plan.
 
 ![IST PIII Floor plan](part2_c_2.png)
 
-And Dr. Wegand is, according to the density map, close to teh hottest spot (printer or coffe machine?).
+And Dr. Wegand is, according to the density map, close to the hottest spot (printer or coffe machine?). The floor plan is further detailed with six labs located on my version of this floor, L1 - L5 and the 3d Print lab. Lab 1 leas to lab 2 and lab 2 leads to lab 3. Lab 4 and 5 are only accessible through lab 5. The 3D lab is acceccible from the corridor. With 100 people entering the floor per hour uniformly distributed, there are two hot spots identified, one in the narrower part of the hallway outside lab1 enterance, not too far from Dr. Wiegand's office, and the other is closer to the exit, ref. figure below. Looking closer at the floor plan, the hallway is ratehr narrow in that first hot spot area and pedestrians get "tricked into the small office next to the hallway. After improving the wall recreatin which expanded the hallway, the first hotspot was resolved, ref the 3D image below.
 
-![Entrance to PIII of 100 people per min, density map ](part2_c_3.png)
+![Pedestrian flow, 100 pedestriands per hour](part2_c_5.png)
+
+
+
+![Entrance to PIII of 100 people per min, density map ](part2_c_4.png)
 
 
 

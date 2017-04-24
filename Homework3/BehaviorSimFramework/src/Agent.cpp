@@ -19,11 +19,11 @@ static char THIS_FILE[]=__FILE__;
 vector<SIMAgent*> SIMAgent::agents;
 bool SIMAgent::debug = false;
 float SIMAgent::radius = 1.50;
-float SIMAgent::Mass = 100.0;
-float SIMAgent::Inertia = 30.0;
+float SIMAgent::Mass = 2.0;
+float SIMAgent::Inertia = 3.0;
 float SIMAgent::MaxVelocity = 5.0;
 float SIMAgent::MaxForce = 1.5;
-float SIMAgent::MaxTorque = 40.0;
+float SIMAgent::MaxTorque = 4.0;
 float SIMAgent::MaxAngVel = 1.0;
 float SIMAgent::Kv0 = 1.0;
 float SIMAgent::Kp1 = 8.0;
@@ -283,10 +283,10 @@ void SIMAgent::FindDeriv()
 	//dx/dt = v_0 +a*t = velocity;
 	//dv/dt = a = F/m = acceleration;
 				
-		deriv[0] = input[0] / Mass;			//force per mass = acceleration
-		deriv[1] = input[1] / Inertia;		//torque = angular force per mass = acceleration
-		deriv[2] = -(vd);						//	input[0] * 3.0*deltaT / Mass	;			//velocity of the agent in local body coordinates = 1/2at^2
-		deriv[3] = input[1] / Inertia;	//t=1, angular velocity of the agent in world coordinates	
+		deriv[0] = state[2];			//input[0] / Mass;			//force per mass = acceleration
+		deriv[1] = state[3];			//input[1] / Inertia;		//torque = angular force per mass = acceleration
+		deriv[2] = -(input[0] / Mass + vd);		//-(vd);						//	input[0] * 3.0*deltaT / Mass	;			//velocity of the agent in local body coordinates = 1/2at^2
+		deriv[3] = input[1] / Inertia;	// input[1] / Inertia;	//t=1, angular velocity of the agent in world coordinates	
 }
 
 /*
@@ -394,7 +394,7 @@ vec2 SIMAgent::Arrival()
 	//float vn;
 	if (ADist < ARadius)
 
-		vd = state[2]*.25;
+		vd = state[2]*.025;
 		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 		
 	
@@ -607,7 +607,8 @@ vec2 SIMAgent::Cohesion()
 	// TODO: Add code here
 	*********************************************/
 	vec2 tmp;
-
+	SIMAgent::agents[0];
+	
 
 	return tmp;
 }

@@ -98,13 +98,16 @@ One floor of the IST PIII building is modelled using the first floor floor plan.
 
 ![IST PIII Floor plan](part2_c_2.png)
 
-And Dr. Wegand is, according to the density map, close to the hottest spot (printer or coffe machine?). The floor plan is further detailed with six labs located on my version of this floor, L1 - L5 and the 3d Print lab. Lab 1 leas to lab 2 and lab 2 leads to lab 3. Lab 4 and 5 are only accessible through lab 5. The 3D lab is acceccible from the corridor. With 100 people entering the floor per hour uniformly distributed, there are two hot spots identified, one in the narrower part of the hallway outside lab1 enterance, not too far from Dr. Wiegand's office, and the other is closer to the exit, ref. figure below. Looking closer at the floor plan, the hallway is ratehr narrow in that first hot spot area and pedestrians get "tricked into the small office next to the hallway. After improving the wall recreatin which expanded the hallway, the first hotspot was resolved, ref the 3D image below.
-
-![Pedestrian flow, 100 pedestriands per hour](part2_c_5.png)
-
-
+And Dr. Wegand is, according to the density map, close to the hottest spot (printer or coffe machine?). The floor plan is further detailed with six labs located on my version of this floor, L1 - L5 and the 3d Print lab. Lab 1 leas to lab 2 and lab 2 leads to lab 3. Lab 4 and 5 are only accessible through lab 5. The 3D lab is acceccible from the corridor. With 100 people entering the floor per hour uniformly distributed, there are two hot spots identified, one in the narrower part of the hallway outside lab1 enterance, not too far from Dr. Wiegand's office, and the other is closer to the exit, ref. figure below. Looking closer at the floor plan, the hallway is ratehr narrow in that first hot spot area and pedestrians get "tricked into the small office next to the hallway.
 
 ![Entrance to PIII of 100 people per min, density map ](part2_c_4.png)
 
+After improving the wall recreatin which expanded the hallway, the first hotspot was resolved, ref the 3D image below.
 
+![Pedestrian flow, 100 pedestriands per hour](part2_c_5.png)
 
+Statistic
+
+The 3D Lab utilization was added, represented by a bar chart, showing a utilization of about 80% on average. This is aout what should be expected as 50% of the pedestrians entering the building was set to visit this lab.
+
+![3D lab utilization](part2_c_6.png)

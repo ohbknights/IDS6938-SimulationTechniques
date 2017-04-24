@@ -235,7 +235,7 @@ void SIMAgent::InitValues()
 	KArrival = -.030;
 	KDeparture = 10.0;
 	KNoise = .75;
-	KWander = 3.0;
+	KWander = .30;
 	KAvoid = 1.0;
 	TAvoid = 1.0;
 	RNeighborhood = 2.0;
@@ -389,12 +389,12 @@ vec2 SIMAgent::Arrival()
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]) + M_PI;
 	float ARadius = 300.0;
-	//float vd = SIMAgent::MaxVelocity;
-	float vd = state[2];		//SIMAgent::MaxVelocity;
-	//float vn;
+	float vd = SIMAgent::MaxVelocity;
+	
 	if (ADist < ARadius)
 
-		vd = vd*KArrival;
+		//vd *= ADist /(2.0*ARadius);
+		state[2] = ADist /(2.0*ARadius);
 		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 		
 	
@@ -418,18 +418,18 @@ vec2 SIMAgent::Departure()
 	
 	vec2 tmp = goal - GPos;
 	float DDist = tmp.Length();
-	float DRadius = 750.0;
 	tmp.Normalize();
 	thetad = atan2(tmp[1], tmp[0]);
+	float DRadius = 1500.0;
 	float vd = SIMAgent::MaxVelocity;
-	float vn;
-	
+
 	if (DDist > DRadius)
-	{
-		
-		vn = vd/KWander;
-		return vec2(cos(thetad)*vn, sin(thetad)*vn), tmp;
-	}
+
+		//vd *= DDist /(2.0*ARadius);
+		state[2] = DDist / (2.0*DRadius);
+	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+
+
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 }
 
@@ -506,11 +506,11 @@ vec2 SIMAgent::Avoid()
 
 	
 	if (x_col < r_obs)
-		thetad -= .25;
+		thetad -= .5*M_PI;
 		//return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 	
 	if (y_col < r_obs) 
-		thetad += .5;
+		thetad += .5*M_PI;
 		//return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 	
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;

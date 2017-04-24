@@ -7,7 +7,7 @@ by Oddny H Brun
 
 #### (a) Derivative
 
-The derivatives are implemented using Eulers method. The first two, deriv[0] and deriv[1] represent the change in length traveled by the agent per time step, dx/dt = v.  The other two, deriv[2] and deriv[3] are the change in velocity per time step dv/dt = force/mass = acceleration for linear and angular movement of the agent, respecitvely. The Euler method seems to give reasonable results in terms of linear movement. I suspect that a higher order method like the midpoint method or the Runge-Kutta 4 method might have given more narrow turns whenever an agent changes direction. This has not been checked or attmpted quantified in this work.
+The derivatives are implemented using Eulers method. The first two, deriv[0] and deriv[1] represent the change in length traveled by the agent per time step, dx/dt = v.  The other two, deriv[2] and deriv[3] are acceleration, the change in velocity per time step dv/dt = force/mass = acceleration for linear and angular movement of the agent, respecitvely. The Euler method seems to give reasonable results in terms of linear movement. I suspect that a higher order method like the midpoint method or the Runge-Kutta 4 method might have given more narrow turns whenever an agent changes direction as well as a more straight walk compared to now where the agent shows tendency to zig-zagging a little. This suspicion has not been checked or attmpted quantified in this work.
 
 The derivative were defined as:
 
@@ -16,7 +16,7 @@ The derivative were defined as:
 		deriv[2] = input[0]/Mass;
 		deriv[3] = input[1] / Inertia;
 
-With these definitions for the derivative, only deriv[0] and derv[1] changes as the program execute. Deriv[2] and deriv[3] are constants based on the initial settings for mass, momentum, inertia and calculations of input[0] and input[2]. The agent moves to and from target in a sliding manner without moving its feet. Only a change in these input values would cause changes to deriv[1] and deriv[2].  When deriv[2] is chnged by either adding state[2] or vd to it, the agent walks with its legs. In the case of adding state[2], the speed is much slower than when vd is added. In both cases, adding the velocity represented by state[2] or vd is assuming time is one in order to become an acceleration term. 
+With these definitions for the derivative, only deriv[0] and derv[1] changes as the program execute. Deriv[2] and deriv[3] are constants based on the initial settings for mass, momentum, inertia and calculations of input[0] and input[2]. The agent moves to and from target in a sliding manner without moving its feet. Only a change in these input values would cause changes to deriv[1] and deriv[2].  When deriv[2] is changed by either adding state[2] or vd to it, the agent walks with its legs. In the case of adding state[2], the speed is much slower than when vd is added. In both cases, adding the velocity represented by state[2] or vd is assuming time is one in order to become an acceleration term a=v. 
 
 In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axix as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 8/6, a force per mass of 9/1.75, and velocity Kv of 3. Force/mass and velocity was increased and decreased to increase/decrease the walking speed of the agent.
 
@@ -24,7 +24,23 @@ In order to achieve smooth movements, the agents' mass and inertia were adjusted
 
 Seek
 
-Seek was implemented
+Seek was implemented by calculating the desired velocity between agent's current position, GPos, and its target, goal, and desired angle, thetad, which is the angle between current velocity and desired velocity to find the steering velocity, the correction needed in order to react target. When executing, the agents seek the target, and when reaching the target, they continue to move in circles around the target. They also respond to the target being moved by seeking the target in its new location.
+
+Flee
+
+Flee was impleented by the same algorithm as for seek, except for adjusting the desired angle thetad by 180degrees. When executed, the agents walk away from target and continue to walk until reaching the edge of the flat "earth". They also respond to the target being moved by changing direction if new target gets located in front of where they were fleeing.
+
+Arrival
+
+The algoritm for arrival is equal to the seek algorithm until the agents come within a set distance from the target, Aradius. Then the agents'sped is slowed dovn by a factor of either KArrival or a factor calculated as its distance Adist divided by 2 times its Aradius, Adist/(2*Aradius). The facor 2 was just to achieve a slower approach than just Adist/Aradius. When executed, the agents behave as for seek behavior until they are a distance Aradus from the target, then they slow dovn as they continue to approach the target. They respond to target being moved by seeking the new target location at "full" speed when further than Aradius away and slow down when being less than a distance Aradius from the target. If behavior is changed to different mode they resume the speed and direction equivivalent for that behavior. Currently, the Aradius is set to 300.
+
+Departure
+
+The algorithm for departure follows the same princilpes as for arrival except for the agetns' speed being reduced as the agents have moved a given distance away from the target. Currently, the distance is set to a radius, Dradius of 1200. when executed, the agents behave like for flee until they reach a distance Dradius from the target, then they slow down by a factor of Ddist/(2*Dradius). The respond to target movement accordingly by  resuming "full speed" fleeing the new target until they are a distance Dradius frorm the target, then they slow teh speed down by teh factor Ddist/(2*Dradius).
+
+Wander
+
+The agent behavior wander was implemented as flee, execpt for the desired angle thetad being randomly created by a uniform distribution on [0, 360] times a noise factor, Knoise. When executed, the agents will change their direction in a seamingly random manner, but this random adjustment is only done once as opposite to having the agents randomly change their directions repetitively without selecting wander repetitively. Their velocity is adjusted by multiplying desired velocity vd by a factor KWnder. All agents wander off in the same direction as the same thetad value is used for all. If time allows, I plan to generate different thetad for each agent. Their behavior is not responding to the target as thetad is independent of the target.
 
 Obstacles
 
@@ -33,9 +49,9 @@ Approach:
 - for each obstacle, find obstacle location and diameter (env->obstacles[i][0], env->obstacles[i][1]) and (env->obstacles[i][2]) and check if "cylinder corridor" along the direction of movement is clear
 - take corrective action when "cylinder corridor" is not clear.
 
-Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the formula of the straight line between agent's location, GPos, and its goal, goal. A radius of length "radius" is added to both sides in x and y direction (that is the actual radius, the hypotenus, is a little bigger than the radius) of the straight line to define the corridor. Then for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. I check in both x and y direction along the direction of travel, and if obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is arbitrary + .25 if obstacle is in y direction, or -.25 if in x direction. But this factor may be calculated based on obstacle location and size.
+Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the formula of the straight line between agent's location, GPos, and its goal, goal. A radius of length "radius" is added to both sides in x and y direction (that is the actual radius, the hypotenus, is a little bigger than the radius) of the straight line to define the corridor. Then for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. I check in both x and y direction along the direction of travel, and if obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to + M_PI/2 if obstacle is in y direction, or -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
 
-Status: Used obstacle no 1 and found it to be within the agent's corridor, but have issues with my "if statement" when checking if any part of obstacle is within corridor, and get aborted during execution. The idea is to expand this in a for loop that runs through all the obstacles.
+Status: Used obstacle no 1 and found it to be within the agent's corridor, but have issues with my "if statement" when checking if any part of obstacle is within corridor, and get aborted during execution. The idea is to expand this algorithm in a for loop that runs through all the obstacles for all agents.
 
 
 
@@ -45,7 +61,9 @@ Separation
 
 Step one: Identify other agents within radius of "RNeighborhood" of a specific agent.
 
-I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. This was implemented as a for loop running through all agents (SIMAgent::agents.size(), starting with agents[1] as nr 0 was the one I picked for separation. The distance was calculated as a two dimensional vector representing the distance between agent 0's GPos and each of the other agents' GPos. If the lengt of this vector was less than the RNeighborhood, agent's tmp = (agent's goal - GPos) was normalized and cumulated for each agent within the RNeighborhood. This cumulative distance measure was used to calculate a new thetad +180 degrees for agent 0 to separate from the neighboring agents. 
+I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. This was implemented as a for loop running through all agents (SIMAgent::agents.size(), starting with agents[1] as nr 0 was the one I picked for separation. The distance was calculated as a two dimensional vector representing the distance between agent 0's GPos and each of the other agents' GPos. If the lengt of this vector was less than the RNeighborhood, agent's tmp = (agent's goal - GPos) was normalized and cumulated for each agent within the RNeighborhood. This cumulative distance measure was used to calculate a new thetad +180 degrees for agent 0 to separate from the neighboring agents.
+
+
 
 
 

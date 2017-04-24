@@ -7,16 +7,18 @@ by Oddny H Brun
 
 #### (a) Derivative
 
-The derivatives are implemented using Eulers method. The first two, deriv[0] and deriv[1] represent the change in velocity per time step dv/dt = force/mass = acceleration for linear and angular movement of the agent, respecitvely. The other two, deriv[1] and deriv[2] are the change in length traveled by the agent per time step, dx/dt = v. The Euler method seems to give reasonable results in terms of linear movement. I suspect thet a higher order method like the midpoint method or the Runge-Kutta 4 method might have given more narrow turns whenever an agent changes direction. This has not been checked or attmpted quantified in this work.
+The derivatives are implemented using Eulers method. The first two, deriv[0] and deriv[1] represent the change in length traveled by the agent per time step, dx/dt = v.  The other two, deriv[2] and deriv[3] are the change in velocity per time step dv/dt = force/mass = acceleration for linear and angular movement of the agent, respecitvely. The Euler method seems to give reasonable results in terms of linear movement. I suspect that a higher order method like the midpoint method or the Runge-Kutta 4 method might have given more narrow turns whenever an agent changes direction. This has not been checked or attmpted quantified in this work.
 
 The derivative were defined as:
 
-		deriv[0] = input[0] / Mass;
-		deriv[1] = input[1] / Inertia;
-		deriv[2] = state[2] - vd;
-		deriv[3] = input[1] / Inertia; //Assuming time is one as velocity*time equals distance.
+		deriv[0] = state[2];
+		deriv[1] = state[3];
+		deriv[2] = input[0]/Mass;
+		deriv[3] = input[1] / Inertia;
 
-In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axix as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 40/30, and a force per mass of 8/100.
+With these definitions for the derivative, only deriv[0] and derv[1] changes as the program execute. Deriv[2] and deriv[3] are constants based on the initial settings for mass, momentum, inertia and calculations of input[0] and input[2]. The agent moves to and from target in a sliding manner without moving its feet. Only a change in these input values would cause changes to deriv[1] and deriv[2].  When deriv[2] is chnged by either adding state[2] or vd to it, the agent walks with its legs. In the case of adding state[2], the speed is much slower than when vd is added. In both cases, adding the velocity represented by state[2] or vd is assuming time is one in order to become an acceleration term. 
+
+In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axix as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 8/6, a force per mass of 9/1.75, and velocity Kv of 3. Force/mass and velocity was increased and decreased to increase/decrease the walking speed of the agent.
 
 #### (b) Individual behaviors
 

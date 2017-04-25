@@ -673,6 +673,7 @@ vec2 SIMAgent::Leader()
 	SIMAgent::agents[0]->GPos;
 	vec2 tmp = goal - SIMAgent::agents[0]->GPos;
 	vec2 a_dist;
+	vec2 f_dist;
 	vec2 norm_tmp;
 	norm_tmp[0] = 0.0;
 	norm_tmp[1] = 0.0;
@@ -682,9 +683,13 @@ vec2 SIMAgent::Leader()
 	for (unsigned int j = 1; j < SIMAgent::agents.size(); j++)
 	{
 		a_dist = SIMAgent::agents[j]->GPos - SIMAgent::agents[0]->GPos;
-		//if (a_dist.Length() < SIMAgent::RNeighborhood)
+		f_dist = SIMAgent::agents[j]->GPos - SIMAgent::agents[j]->goal;
+		
 			s_tmp = goal - SIMAgent::agents[j]->GPos;
 			norm_tmp += s_tmp.Normalize();
+
+			if (f_dist.Length() > tmp.Length())
+				SIMAgent::agents[j]->state[2] = SIMAgent::agents[j]->state[2] * .5;
 	}
 	norm_tmp = norm_tmp.Normalize();
 	thetad = atan2(norm_tmp[1], norm_tmp[0]);

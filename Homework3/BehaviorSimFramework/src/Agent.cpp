@@ -484,39 +484,42 @@ vec2 SIMAgent::Avoid()
 	vec2 tmp = goal - GPos;
 
 	tmp.Normalize();
-	thetad = atan2(tmp[1], tmp[0]) + M_PI;
+	thetad = atan2(tmp[1], tmp[0]);
 	float vd = SIMAgent::MaxVelocity;
 
 	float m_coef;
 	float con;
 	float y_a;
 	float x_a;
+	////calculating the equation for the straight line between GPos and goal y = m_coef*x + con
 	m_coef = (goal[1] - GPos[1]) / (goal[0] - GPos[0]);
 	con = (goal[1] - GPos[1]) - m_coef*(goal[0] - GPos[0]);
 
-	//for(unsigned k=0; k< env->obstaclesNum; k++) {;
-	//float y_val = env->obstacles[0][1];
+	////for(unsigned k=0; k< env->obstaclesNum; k++) {;
+	////float y_val = env->obstacles[0][1];
 	x_a = (env->obstacles[0][1] - con) / m_coef;
 	y_a = m_coef*env->obstacles[0][0] + con;
 
-	
-	float x_col = sqrt((pow((x_a + radius - env->obstacles[0][0]), 2.0)));
-	float y_col = sqrt((pow((y_a + radius - env->obstacles[0][1]), 2.0)));
-	float r_obs = env->obstacles[0][3];
+	//
+	float x_col; 
+	float y_col; 
+	float r_obs; 
 
-	
-	if (x_col < r_obs)
-		thetad -= .5*M_PI;
+	x_col = sqrt((pow((x_a + radius - env->obstacles[0][0]), 2.0)));
+	y_col = sqrt((pow((y_a - radius - env->obstacles[0][1]), 2.0)));
+	r_obs = env->obstacles[0][2];
+
+	if ((x_col < r_obs) || (y_col < r_obs))
+	thetad -= .5*M_PI;
 		//return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 	
-	if (y_col < r_obs) 
-		thetad += .5*M_PI;
-		//return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+	//////if (y_col < r_obs) 
+	////	thetad += .5*M_PI;
+		vd = SIMAgent::MaxVelocity;
+		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 	
 	return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
-	
-	//}
-	//return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
+	//return tmp;
 }
 
 /*
@@ -648,28 +651,6 @@ vec2 SIMAgent::Leader()
 	// TODO: Add code here
 	*********************************************/
 	
-	//vec2 tmp = goal - SIMAgent::agents[0]->GPos;
-	//tmp.Normalize();
-
-	//SIMAgent::agents[0]->thetad = atan2(tmp[1], tmp[0]) + M_PI;
-	//float vd = SIMAgent::MaxVelocity;
-	////SIMAgent::agents[0]->vd = vd;
-
-	//vec2 Llength;
-	//
-	//for (unsigned int j = 1; j < SIMAgent::agents.size(); j++)
-	//{
-	//	
-	//	SIMAgent::agents[j]->goal = SIMAgent::agents[0]->goal;
-	//	SIMAgent::agents[j]->vd = SIMAgent::agents[0]->vd;
-	//	SIMAgent::agents[j]->thetad = SIMAgent::agents[0]->thetad;
-	//	SIMAgent::agents[j]->vd = SIMAgent::agents[0]->vd;
-	//	//Llength = SIMAgent::agents[0]->goal - SIMAgent::agents[j]->GPos;
-	//	/*if (Llength.Length() < RNeighborhood)
-	//		SIMAgent::agents[j]->state[2] = Llength.Length() / (RNeighborhood);*/
-	//}
-	
-
 	SIMAgent::agents[0]->GPos;
 	vec2 tmp = goal - SIMAgent::agents[0]->GPos;
 	vec2 a_dist;

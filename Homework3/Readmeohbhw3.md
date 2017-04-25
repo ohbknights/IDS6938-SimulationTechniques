@@ -55,7 +55,9 @@ Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D
 
 This check is  If obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to + M_PI/2 if obstacle is in y direction, or -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
 
-Status: Used obstacle no 1 and found it to be within the agent's corridor, but have issues with my "if statement" when checking if any part of obstacle is within corridor, and get aborted during execution. The idea is to expand this algorithm in a double "for loop" that runs through all the obstacles for all agents.
+Status: Used obstacle no 1 as it is locaed at the first time "Avoid" behavior is selected and found it to be within the agent's corridor. In order to test the algorithm I had to play around a little by going back and forth between different behaviors in order to "hit" a setting where an obstacle was located in the agent's path. As the agent approached the obstacle, it made a right 90 degree correction and avoided the obstacle. 
+
+The idea is to expand this algorithm in a double "for loop" that runs through all the obstacles for all agents. If time allows, I will implment this part as well. The principles will be the same, just making sure all agents' corridors are checked for all obstacles, and desired angle thetad is adjunsted to avoid collision. 
 
 
 
@@ -71,9 +73,11 @@ At first when executing the program with a radius, RNeighborhood, of 3.0 and 14 
 
 Allign
 
-For the allignment algorithm I calculate an normalized sum of desired velocity for all agents (similar to the separate algorithm for the agents that were within the RNeighborhood distance from the separating agent), and use this as the desired velocity for all agents. When executed, they all walk off in the same direction. If target gets moved up in front of where they are heading, they turn around and walk off in the same direction.
+For the allignment algorithm I calculate an normalized sum of desired velocity for all agents (similar to the separate algorithm for the agents that were within the RNeighborhood distance from the separating agent), and use this as the desired velocity for all agents. When executed, they all walk off in the same direction. If target gets moved up in front of where they are heading, they turn around and walk off in the same direction. With this allignment algorithm the agents do not line up in a straight line, but they do head in the same direction.
 
+Leader Following
 
+Follw the leader is implemented using the same algorithm as for allign combined with slowing down the speed of agents in front of the leader until they get behind the leader, then they resume the same speed as the leader. When executed, all agents walk off in the same direction as under allignment. In addition, the agents that are in front of the leader slow down until the leader is in front. Then they resume same speed as the leader. As under allignment, the agents do not line up in  a straight line behind the leader, but they do follow behind the leader, heading in the same direction as the leader.
 
 ### Part 2 - Simulating a simple pedestrian flow
 

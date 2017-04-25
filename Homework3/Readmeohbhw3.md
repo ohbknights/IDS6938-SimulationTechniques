@@ -69,6 +69,9 @@ I pick agents[0] to be my agent and usees its location to check for the other wi
 
 At first when executing the program with a radius, RNeighborhood, of 3.0 and 14 agents, the separation appeared like flee. By increasing the radius to 70. the separation was noticable. One agent clearly seperates away from its nearest agents. As should be expected, the separation effect only takes place if other agents are present in agents[0]'s neighborhood. The separation effect is even easier observed with many agents (60 agents) in an arrival formation as the separation command is initiated.
 
+Allign
+
+For the allignment algorithm I calculate an normalized sum of desired velocity for all agents (similar to the separate algorithm for the agents that were within the RNeighborhood distance from the separating agent), and use this as the desired velocity for all agents. When executed, they all walk off in the same direction. If target gets moved up in front of where they are heading, they turn around and walk off in the same direction.
 
 
 

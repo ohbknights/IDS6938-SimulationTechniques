@@ -46,12 +46,16 @@ Obstacles
 
 Approach:
 - find number of obstales (obstacleNum)
-- for each obstacle, find obstacle location and diameter (env->obstacles[i][0], env->obstacles[i][1]) and (env->obstacles[i][2]) and check if "cylinder corridor" along the direction of movement is clear
+- for each obstacle, find obstacle x and y location and radius (env->obstacles[i][0], env->obstacles[i][1]) and (env->obstacles[i][2]) and check if "cylinder corridor" along the direction of movement is clear
 - take corrective action when "cylinder corridor" is not clear.
 
-Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the formula of the straight line between agent's location, GPos, and its goal, goal. A radius of length "radius" is added to both sides in x and y direction (that is the actual radius, the hypotenus, is a little bigger than the radius) of the straight line to define the corridor. Then for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. I check in both x and y direction along the direction of travel, and if obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to + M_PI/2 if obstacle is in y direction, or -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
+Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the formula of the straight line between agent's location, GPos, and its goal, goal. A radius of length "radius" is added to both sides in x and y direction (this results in the actual radius, the hypotenus, to be a little bigger than the radius specified) of the straight line to define the corridor. Then for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. I check in both x and y direction along the direction of travel. This is conducted by using the x and y position of the obstacle's center and compare to x and y values around that location, using the equation for a circle:
 
-Status: Used obstacle no 1 and found it to be within the agent's corridor, but have issues with my "if statement" when checking if any part of obstacle is within corridor, and get aborted during execution. The idea is to expand this algorithm in a for loop that runs through all the obstacles for all agents.
+(x-x_a)^2 + (y-y_a)^2 = (r_O)^2, where x_a, y_a and r_a are obstacle x and  y locations, and radius, respectively.
+
+This check is  If obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to + M_PI/2 if obstacle is in y direction, or -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
+
+Status: Used obstacle no 1 and found it to be within the agent's corridor, but have issues with my "if statement" when checking if any part of obstacle is within corridor, and get aborted during execution. The idea is to expand this algorithm in a double "for loop" that runs through all the obstacles for all agents.
 
 
 
@@ -61,9 +65,9 @@ Separation
 
 Step one: Identify other agents within radius of "RNeighborhood" of a specific agent.
 
-I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. This was implemented as a for loop running through all agents (SIMAgent::agents.size(), starting with agents[1] as nr 0 was the one I picked for separation. The distance was calculated as a two dimensional vector representing the distance between agent 0's GPos and each of the other agents' GPos. If the lengt of this vector was less than the RNeighborhood, agent's tmp = (agent's goal - GPos) was normalized and cumulated for each agent within the RNeighborhood. This cumulative distance measure was used to calculate a new thetad +180 degrees for agent 0 to separate from the neighboring agents.
+I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. This was implemented as a for loop running through all agents (SIMAgent::agents.size(), starting with agents[1] as nr 0 was the one I picked for separation. The distance was calculated as a two dimensional vector representing the distance between agent 0's GPos and each of the other agents' GPos. If the lengt of this vector was less than the RNeighborhood, agent's tmp = (agent's goal - GPos) was normalized and cumulated for each agent within the RNeighborhood. This cumulative distance measure was used to calculate a new thetad degrees for agent 0 to separate from the neighboring agents.
 
-
+At first when executing the program with a radius, RNeighborhood, of 3.0 and 14 agents, the separation appeared like flee. By increasing the radius to 70. the separation was noticable. One agent clearly seperates away from its nearest agents. As should be expected, the separation effect only takes place if other agents are present in agents[0]'s neighborhood. The separation effect is even easier observed with many agents (60 agents) in an arrival formation as the separation command is initiated.
 
 
 
@@ -129,3 +133,7 @@ Statistic
 The 3D Lab utilization was added, represented by a bar chart, showing a utilization of about 80% on average. This is aout what should be expected as 50% of the pedestrians entering the building was set to visit this lab.
 
 ![3D lab utilization](part2_c_6.PNG)
+
+Two additional features were added, a waiting area before entering into the 3D lab and of course, the IDS6938 class as shown in the figure below.
+
+![IDS6938, and waiting area](part2_c_7.PNG)

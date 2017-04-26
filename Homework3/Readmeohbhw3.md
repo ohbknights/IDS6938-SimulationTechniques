@@ -18,6 +18,8 @@ The derivative were defined as:
 
 With these definitions for the derivative, only deriv[0] and derv[1] changes as the program execute. Deriv[2] and deriv[3] are constants based on the initial settings for mass, momentum, inertia and calculations of input[0] and input[2]. The agent moves to and from target in a sliding manner without moving its feet. Only a change in these input values would cause changes to deriv[1] and deriv[2].  When deriv[2] is changed by either adding state[2] or vd to it, the agent walks with its legs. In the case of adding state[2], the speed is much slower than when vd is added. In both cases, adding the velocity represented by state[2] or vd is assuming time is one in order to become an acceleration term a=v. 
 
+	deriv[2] = -(input[0] / Mass + vd);
+
 In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axix as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 8/6, a force per mass of 9/1.75, and velocity Kv of 3. Force/mass and velocity was increased and decreased to increase/decrease the walking speed of the agent.
 
 #### (b) Individual behaviors
@@ -55,7 +57,7 @@ Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D
 
 This check is  If obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to + M_PI/2 if obstacle is in y direction, or -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
 
-Status: Used obstacle no 1 as it is locaed at the first time "Avoid" behavior is selected and found it to be within the agent's corridor. In order to test the algorithm I had to play around a little by going back and forth between different behaviors in order to "hit" a setting where an obstacle was located in the agent's path. As the agent approached the obstacle, it made a right 90 degree correction and avoided the obstacle. 
+Status: Used obstacle no 1 as it is locaed at the first time "Avoid" behavior is selected and found it to be within the agent's corridor. In order to test the algorithm I had to play around a little by going back and forth between different behaviors in order to "hit" a setting where an obstacle was located in the agent's path. As the agent approached the obstacle, it made a right 90 degree correction and avoided the obstacle. I am aware that this is not the ideal way to check the correctness of this algorithm. Hopefully, I can get to the next step as described in the following paragraph.
 
 The idea is to expand this algorithm in a double "for loop" that runs through all the obstacles for all agents. If time allows, I will implment this part as well. The principles will be the same, just making sure all agents' corridors are checked for all obstacles, and desired angle thetad is adjunsted to avoid collision. 
 
@@ -78,6 +80,9 @@ For the allignment algorithm I calculate an normalized sum of desired velocity f
 Leader Following
 
 Follw the leader is implemented using the same algorithm as for allign combined with slowing down the speed of agents in front of the leader until they get behind the leader, then they resume the same speed as the leader. When executed, all agents walk off in the same direction as under allignment. In addition, the agents that are in front of the leader slow down until the leader is in front. Then they resume same speed as the leader. As under allignment, the agents do not line up in  a straight line behind the leader, but they do follow behind the leader, heading in the same direction as the leader.
+
+Cohesion and Flocking not in yet.
+
 
 ### Part 2 - Simulating a simple pedestrian flow
 
@@ -123,11 +128,13 @@ The three service areas were changed to provide service at a Poisson distributio
 
 #### (c) Modeling and analysis of the PIII building
 
-One floor of the IST PIII building is modelled using the first floor floor plan. (Dr Wiegand and several of the labs are according to my model on forst floor for the time being.)
+One floor of the IST PIII building is modelled using the plan for the first floor and modify its content to facilitate Dr Wiegand and several of the labs from the second floor. The scenario is to test the pedestrian flow and focus on heavy traffic areas as well as areas that have indirect access from the hallways. Such areas are Labs 2, 3, 4 and 5. A pedestrian can only get to lab2 via lab 1. Lab 3 can only get accessed through lab 1 and 2. Lab 4 and 5 can only get accessed through lab 3. Of the labs, only the 3D lab has direct access from the hall way. 
+
+The scenario is analysed by steady flow of pedestrians entering and exiting the area to observe any hotspots, some utilization statistics as well as an evacuation simulation.
 
 ![IST PIII Floor plan](part2_c_2.PNG)
 
-And Dr. Wegand is, according to the density map, close to the hottest spot (printer or coffe machine?). The floor plan is further detailed with six labs located on my version of this floor, L1 - L5 and the 3d Print lab. Lab 1 leas to lab 2 and lab 2 leads to lab 3. Lab 4 and 5 are only accessible through lab 5. The 3D lab is acceccible from the corridor. With 100 people entering the floor per hour uniformly distributed, there are two hot spots identified, one in the narrower part of the hallway outside lab1 enterance, not too far from Dr. Wiegand's office, and the other is closer to the exit, ref. figure below. Looking closer at the floor plan, the hallway is ratehr narrow in that first hot spot area and pedestrians get "tricked into the small office next to the hallway.
+And Dr. Wegand is, according to the density map, close to the hottest spot (printer or coffe machine?). The floor plan is further detailed with six labs located on my version of this floor, L1 - L5 and the 3D Print lab. Lab 1 leas to lab 2 and lab 2 leads to lab 3. Lab 4 and 5 are only accessible through lab 3. The 3D lab is acceccible from the corridor. With 100 people entering the floor per hour uniformly distributed, there are two hot spots identified, one in the narrower part of the hallway outside lab1 enterance, not too far from Dr. Wiegand's office, and the other is closer to the exit, ref. figure below. Looking closer at the floor plan, the hallway is ratehr narrow in that first hot spot area and pedestrians get "tricked into the small office next to the hallway.
 
 ![Entrance to PIII of 100 people per min, density map ](part2_c_4.PNG)
 
@@ -135,12 +142,58 @@ After improving the wall recreatin which expanded the hallway, the first hotspot
 
 ![Pedestrian flow, 100 pedestriands per hour](part2_c_5.PNG)
 
+The full model
+
+The model is expanded to include a classroom for IDS6938, a waiting are outside Dr. Wiegand's office and a group assemble representing the coffe/small kitchen area. The model is shown in the following figure:
+
+![piii full model](part2_c_full.PNG)
+
 Statistic
 
-The 3D Lab utilization was added, represented by a bar chart, showing a utilization of about 80% on average. This is aout what should be expected as 50% of the pedestrians entering the building was set to visit this lab.
+Before the IDS6938 class was added, most of the traffic went to the 3D lab and the lab utilization , represented by a bar chart, shows a utilization of about 80% on average. This is aout what should be expected as 50% of the pedestrians entering the building was set to visit this lab. In it self, this number does not tell too much, but if we let the pedestrians repreent clients coming for 3D printing services, we could use this number to evaluate technical and economical efficiency as well as potential for improvements, in which case, a 20% idleness migh be rather high.
 
 ![3D lab utilization](part2_c_6.PNG)
 
-Two additional features were added, a waiting area before entering into the 3D lab and of course, the IDS6938 class as shown in the figure below.
+The utilization statistics for 3D lab is one example of information available for all the service areas in this model. Similar statistics and additiaonal information is available in Anylogic,including custom progrmming options. The quality of this information depends on realistic setting of the parameters for the model, such as arrival time, wait time, service time and their distribution. In a future applicaton the effort to acquire such information would be highly prioritized.
 
-![IDS6938, and waiting area](part2_c_7.PNG)
+Looking at the current model, with a coffe area, a waiting area added before entering into the 3D lab, and the IDS6938 class included, another density map were created. Also, for the IDS class, the delay time distribution is changed from uniform to Poisson(21). Under otherwise similar conditions, using a Poisson distribution seems to create a less smooth flow compared to the uniform (this is not further quantified here). The number of pedestrian entering into the floor is 150 per hour. The percentage of these heading to SimTech class is set to 1/3, i.e. 50. The density map measures pedestrians per square meter. As displayed in the figure below, the SimTech class seem to be pretty popular as it forms a hot spot with density reaching 1.5 persons per square meter.
+
+![IDS6938, and waiting area added](part2_c_7.PNG)
+
+Evacuation evaluation
+
+After one hour 153 pedestrians had entered the piii building and 18 had exited, leaving 135 inside the building. These were located
+
+- Lab 1 - 5: 80 pedestrians
+- Dr Wiegand's office: 2
+- Dr Kider's class: 33.
+
+
+Of the remaining 20 ( = 135 - 115) some were in the 3D lab, some in the coffe area, some in the restroms and some in the hallways as shown in the 3d figure of the simulation below.
+
+![Population of piii after one hour](part2_c_1hrun1.PNG)
+
+The big part of the number are verified in the following snapshot:
+
+![Population and numbers of piii after one hour](part2_c_1hrun3.PNG)
+
+I defined an evacuation function but did not succeed in getting it to execute. But by doing the math manually, we find that there are 135 pedestrians that need to leave the building immediately after evacuation order is given. We assume they only can exit through the "exitPiii" exit. If all these 135 did reach the passage out to the circular area about the same time, it would create a servere queue. This passage is, according to my layout, about 90 cm wide (which happens to be the width of my home front door, and most likely not up to code for a building like piii). The circular area located immediate before the exit is about 78 square meters. So worst case senario would be 135 pedestrians in an 78 sqare meter area, that is about 1.7 pedestrians per sqare meter. That in itself might be manageable. 
+
+Taking into consideration two factors:
+
+- about 80 of the pedestrians are all the way in the other end of the building and will us more time to reach the exit than the ones closer by the exit, given that everyone respond immediately to the evacuation order.
+- the passage leading out to the circular area is in reality a double door far wider than on the floorplan used in this simulation
+
+it is more likely that the pedestrians per square meter would be less than 1.7.
+
+In real life one question would be how fast this area needs to be emptied out? Is there an explosion about to happen near by that is expected to harm anybody stuck in this area, or is it a less servere cause for evacuation? 
+
+The reality of this evacuation analysis would have to be evaluated based on different critereias. Some of these criteria are: 
+
+- max time to empty the building, 
+- pedestrains response time when evacuation order is issued, 
+- true bottle necks along the evacuation route
+- exit capacity for the available exits in the evacuation route.
+
+An up-and-running evacuation function would be of value to simulate different evacuation scenarios and evaluate potential actions nedded if worst case scenario was not acceptable.
+

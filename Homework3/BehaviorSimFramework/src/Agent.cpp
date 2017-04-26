@@ -238,7 +238,7 @@ void SIMAgent::InitValues()
 	KWander = .30;
 	KAvoid = 1.0;
 	TAvoid = 1.0;
-	RNeighborhood = 70.0;
+	RNeighborhood = 110.0;
 	KSeparate = 2.10;
 	KAlign = 1.0;
 	KCohesion = .010;
@@ -394,7 +394,7 @@ vec2 SIMAgent::Arrival()
 	if (ADist < ARadius)
 
 		//vd *= ADist /(2.0*ARadius);
-		state[2] = ADist /(2.0*ARadius);
+		state[2] = ADist /(4.0*ARadius);
 		return vec2(cos(thetad)*vd, sin(thetad)*vd), tmp;
 		
 	
@@ -543,7 +543,7 @@ vec2 SIMAgent::Separation()
 	norm_tmp[0] = 0.0;
 	norm_tmp[1] = 0.0;
 	vec2 s_tmp;
-	
+	thetad = atan2(tmp[1], tmp[0]);
 	float RNlength;
 	for (unsigned int j = 1; j < SIMAgent::agents.size(); j++)
 	{

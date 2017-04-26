@@ -16,11 +16,11 @@ The derivative were defined as:
 		deriv[2] = input[0]/Mass;
 		deriv[3] = input[1] / Inertia;
 
-With these definitions for the derivative, only deriv[0] and derv[1] changes as the program execute. Deriv[2] and deriv[3] are constants based on the initial settings for mass, momentum, inertia and calculations of input[0] and input[2]. The agent moves to and from target in a sliding manner without moving its feet. Only a change in these input values would cause changes to deriv[1] and deriv[2].  When deriv[2] is changed by either adding state[2] or vd to it, the agent walks with its legs. In the case of adding state[2], the speed is much slower than when vd is added. In both cases, adding the velocity represented by state[2] or vd is assuming time is one in order to become an acceleration term a=v. 
+With these definitions for the derivative, only deriv[0] and derv[1] changes as the program execute. Deriv[2] and deriv[3] are constants based on the initial settings for mass, momentum, inertia and calculations of input[0] and input[2]. The agent moves to and from target in a sliding manner without moving its feet. Only a change in these input values would cause changes to deriv[1] and deriv[2].  When deriv[2] is changed by either adding state[2] or vd to it, the agent walks with its legs. In the case of adding state[2], the speed is much slower than when vd is added. In both cases, adding the velocity represented by state[2] or vd is assuming time is one in order to become an acceleration term at=v. 
 
 	deriv[2] = -(input[0] / Mass + vd);
 
-In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axix as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 8/6, a force per mass of 9/1.75, and velocity Kv of 3. Force/mass and velocity was increased and decreased to increase/decrease the walking speed of the agent.
+In order to achieve smooth movements, the agents' mass and inertia were adjusted along with force and torque. Too much torque resulted in the agent turning back and forth around its own axis as it walked in the commanded direction. Too high inertia related to torque resulted in wider turns as it was circling around target in a seek as wellas when changing directions due to changing behaviors. I settled at torque per inertia of 8/6, a force per mass of 9/1.75, and velocity Kv of 3. Force/mass and velocity was increased and decreased to increase/decrease the walking speed of the agent.
 
 #### (b) Individual behaviors
 
@@ -34,11 +34,11 @@ Flee was impleented by the same algorithm as for seek, except for adjusting the 
 
 Arrival
 
-The algoritm for arrival is equal to the seek algorithm until the agents come within a set distance from the target, Aradius. Then the agents'sped is slowed dovn by a factor of either KArrival or a factor calculated as its distance Adist divided by 2 times its Aradius, Adist/(2*Aradius). The facor 2 was just to achieve a slower approach than just Adist/Aradius. When executed, the agents behave as for seek behavior until they are a distance Aradus from the target, then they slow dovn as they continue to approach the target. They respond to target being moved by seeking the new target location at "full" speed when further than Aradius away and slow down when being less than a distance Aradius from the target. If behavior is changed to different mode they resume the speed and direction equivivalent for that behavior. Currently, the Aradius is set to 300.
+The algoritm for arrival is equal to the seek algorithm until the agents come within a set distance from the target, Aradius. Then the agents'sped is slowed dovn by a factor of either KArrival or a factor calculated as its distance Adist divided by 3 times its Aradius, Adist/(3*Aradius). The factor 3 was just to achieve a slower approach than just Adist/Aradius. When executed, the agents behave as for seek behavior until they are a distance Aradus from the target, then they slow dovn as they continue to approach the target. They respond to target being moved by seeking the new target location at "full" speed when further than Aradius away and slow down when being less than a distance Aradius from the target. If behavior is changed to different mode they resume the speed and direction equivivalent for that behavior. Currently, the Aradius is set to 300.
 
 Departure
 
-The algorithm for departure follows the same princilpes as for arrival except for the agetns' speed being reduced as the agents have moved a given distance away from the target. Currently, the distance is set to a radius, Dradius of 1200. when executed, the agents behave like for flee until they reach a distance Dradius from the target, then they slow down by a factor of Ddist/(2*Dradius). The respond to target movement accordingly by  resuming "full speed" fleeing the new target until they are a distance Dradius frorm the target, then they slow teh speed down by teh factor Ddist/(2*Dradius).
+The algorithm for departure follows the same princilpes as for arrival except for the agetns' speed being reduced as the agents have moved a given distance away from the target. Currently, the distance is set to a radius, Dradius of 1200. when executed, the agents behave like for flee until they reach a distance Dradius from the target, then they slow down by a factor of Ddist/(2*Dradius). The respond to target movement accordingly by  resuming "full speed" fleeing the new target until they are a distance Dradius frorm the target, then they slow the speed down by the factor Ddist/(2*Dradius).
 
 Wander
 
@@ -53,13 +53,13 @@ Approach:
 
 Cylinder corridor (that is, it is a rectangle bc. this agent moves in 2D, not 3D) is found by calculating the formula of the straight line between agent's location, GPos, and its goal, goal. A radius of length "radius" is added to both sides in x and y direction (this results in the actual radius, the hypotenus, to be a little bigger than the radius specified) of the straight line to define the corridor. Then for each obstacle we check if any area of the corridor is within the obstacle's footprint described by its radius. I check in both x and y direction along the direction of travel. This is conducted by using the x and y position of the obstacle's center and compare to x and y values around that location, using the equation for a circle:
 
-(x-x_a)^2 + (y-y_a)^2 = (r_O)^2, where x_a, y_a and r_a are obstacle x and  y locations, and radius, respectively.
+(x-x_o)^2 + (y-y_o)^2 = (r_o)^2, where x_o, y_o and r_o are obstacle x and y locations, and radius, respectively.
 
-This check is  If obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to + M_PI/2 if obstacle is in y direction, or -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
+If obstacle is within corridor, I decrease or increase the angel thetad, respectively. Right now, this angle correction is set to +M_PI/2. Alternatively, it could be  +M_PI/2 if obstacle is in y direction, and -M_PI/2 if in x direction which should be large enough for the one obstacle in consideration. But this factor may be calculated based on the locations of all obstacles within the existing or future corridoes.
 
 Status: Used obstacle no 1 as it is locaed at the first time "Avoid" behavior is selected and found it to be within the agent's corridor. In order to test the algorithm I had to play around a little by going back and forth between different behaviors in order to "hit" a setting where an obstacle was located in the agent's path. As the agent approached the obstacle, it made a right 90 degree correction and avoided the obstacle. I am aware that this is not the ideal way to check the correctness of this algorithm. Hopefully, I can get to the next step as described in the following paragraph.
 
-The idea is to expand this algorithm in a double "for loop" that runs through all the obstacles for all agents. If time allows, I will implment this part as well. The principles will be the same, just making sure all agents' corridors are checked for all obstacles, and desired angle thetad is adjunsted to avoid collision. 
+Now as I know this algorithm works, the idea is to implement it in a double "for loop" that runs through all the obstacles for all agents. If time allows, I will implment this part as well. The principles will be the same, just making sure all agents' corridors are checked for all obstacles, and desired angle thetad is adjunsted to avoid collision. 
 
 
 
@@ -71,7 +71,7 @@ Step one: Identify other agents within radius of "RNeighborhood" of a specific a
 
 I pick agents[0] to be my agent and usees its location to check for the other within a radius of RNeighborhood. This was implemented as a for loop running through all agents (SIMAgent::agents.size(), starting with agents[1] as nr 0 was the one I picked for separation. The distance was calculated as a two dimensional vector representing the distance between agent 0's GPos and each of the other agents' GPos. If the lengt of this vector was less than the RNeighborhood, agent's tmp = (agent's goal - GPos) was normalized and cumulated for each agent within the RNeighborhood. This cumulative distance measure was used to calculate a new thetad degrees for agent 0 to separate from the neighboring agents.
 
-At first when executing the program with a radius, RNeighborhood, of 3.0 and 14 agents, the separation appeared like flee. By increasing the radius to 70. the separation was noticable. One agent clearly seperates away from its nearest agents. As should be expected, the separation effect only takes place if other agents are present in agents[0]'s neighborhood. The separation effect is even easier observed with many agents (60 agents) in an arrival formation as the separation command is initiated.
+At first when executing the program with a radius, RNeighborhood, of 3.0 and 14 agents, the separation appeared like flee. By increasing the radius to 70 the separation was noticable. One agent clearly seperates away from its nearest agents. As should be expected, the separation effect only takes place if other agents are present in agents[0]'s neighborhood. The separation effect is even easier observed with many agents (60 agents) in an arrival formation as the separation command is initiated.
 
 Allign
 
@@ -79,9 +79,9 @@ For the allignment algorithm I calculate an normalized sum of desired velocity f
 
 Leader Following
 
-Follw the leader is implemented using the same algorithm as for allign combined with slowing down the speed of agents in front of the leader until they get behind the leader, then they resume the same speed as the leader. When executed, all agents walk off in the same direction as under allignment. In addition, the agents that are in front of the leader slow down until the leader is in front. Then they resume same speed as the leader. As under allignment, the agents do not line up in  a straight line behind the leader, but they do follow behind the leader, heading in the same direction as the leader.
+Follw the leader is implemented using the same algorithm as for allign combined with slowing down the speed of agents in front of the leader until they get behind the leader, then they resume the same speed as the leader. When executed, all agents walk off in the same direction as under allignment with the agents that are in front of the leader slow down until the leader is in front. Then they resume same speed as the leader. As under allignment, the agents do not line up in a straight line behind the leader, but they do follow behind the leader, heading in the same direction as the leader.
 
-Cohesion and Flocking not in yet.
+Cohesion and Flocking not in yet. But as I have demonstrated through the above group behavior implementations, knowing where to find relevant variables and update values for individual agents, time was my limiting factor here.
 
 
 ### Part 2 - Simulating a simple pedestrian flow
